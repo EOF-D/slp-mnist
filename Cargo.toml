@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+polars = { version = "0.53.0", features = ["csv"] }
+rand = "0.10.0"
+rayon = "1.11.0"
