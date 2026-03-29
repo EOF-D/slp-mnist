@@ -93,9 +93,6 @@ impl Dataset {
     ///
     /// # Returns
     /// - A vector of labels corresponding to each sample.
-    ///
-    /// # Errors
-    /// - Returns error if the label data is missing or cannot be parsed.
     fn parse_labels(path: impl AsRef<Path>) -> io::Result<Vec<u8>> {
         let mut reader = BufReader::new(File::open(path)?);
         guard_magic(&mut reader, MAGIC_LABELS)?;
