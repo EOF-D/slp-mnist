@@ -2,7 +2,7 @@
     <h1>SLP-MNIST</h1>
 </div>
 
-## References
+## Dataset
 
 - [MNIST Dataset](https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
 
