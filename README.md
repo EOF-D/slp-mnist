@@ -4,7 +4,7 @@
 
 ## References
 
-- [MNIST CVS Dataset](https://www.kaggle.com/datasets/oddrationale/mnist-in-csv)
+- [MNIST Dataset](https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
 
 ## Team Members
 
