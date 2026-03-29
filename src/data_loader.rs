@@ -43,6 +43,25 @@ impl Dataset {
         Ok(Self { samples, labels })
     }
 
+    /// Get the number of samples in the dataset.
+    ///
+    /// # Returns
+    /// - The number of samples.
+    pub fn len(&self) -> usize {
+        self.labels.len()
+    }
+
+    /// Get the pixel slice for the sample at the given index.
+    ///
+    /// # Parameters
+    /// - `i`: The index of the sample to get.
+    ///
+    /// # Returns
+    /// - A slice of normalized pixel values for the sample at the index.
+    pub fn sample(&self, i: usize) -> &[f32] {
+        &self.samples[i * NUM_PIXELS..(i + 1) * NUM_PIXELS]
+    }
+
     /// Parse the pixel samples from an IDX3 ubyte file, normalizing them to [0.0, 1.0].
     ///
     /// # Parameters
