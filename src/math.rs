@@ -29,10 +29,35 @@ pub fn dot(x: &[f32], y: &[f32]) -> f32 {
 pub fn gradient_step(weights: &mut [f32], gradient: &[f32], learning_rate: f32) {
     assert_eq!(weights.len(), gradient.len());
 
+    // w_new = w_old - learning_rate * gradient
     weights
         .iter_mut()
         .zip(gradient)
-        .for_each(|(w, g)| *w -= learning_rate * g); // w_new = w_old - learning_rate * gradient
+        .for_each(|(w, g)| *w -= learning_rate * g);
+}
+
+/// Apply the softmax function to a vector of raw scores, returning a probability distribution.
+///
+/// # Formula
+///
+/// ```md
+/// exp_scores_i = exp(z_i)
+/// softmax(z_i) = exp_scores_i / sum(exp_scores_j for all j)
+/// ```
+///
+/// # Parameters
+/// - `scores`: The raw score vector.
+///
+/// # Returns
+/// - A new vector of probabilities corresponding to each score.
+///
+/// # References
+/// - https://www.pinecone.io/learn/softmax-activation/
+pub fn softmax(scores: &[f32]) -> Vec<f32> {
+    let exp_scores: Vec<f32> = scores.iter().map(|&z| z.exp()).collect();
+    let sum: f32 = exp_scores.iter().sum();
+
+    exp_scores.iter().map(|&e| e / sum).collect()
 }
 
 #[cfg(test)]
@@ -92,5 +117,19 @@ mod tests {
         let gradient = vec![1.0, 2.0, 3.0];
 
         gradient_step(&mut weights, &gradient, 0.1);
+    }
+
+    #[test]
+    fn test_softmax_most_probable() {
+        let scores = vec![2.0, 1.0, 3.0, 2.0, 5.0, 9.0, 2.0, 1.0, 3.0, 4.0];
+        let probabilities = softmax(&scores);
+
+        let max = probabilities
+            .iter()
+            .cloned()
+            .fold(f32::NEG_INFINITY, f32::max);
+
+        // Index 5 (9.0) should be the most probable.
+        assert_eq!(probabilities[5], max);
     }
 }
