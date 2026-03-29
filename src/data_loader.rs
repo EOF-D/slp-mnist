@@ -109,7 +109,7 @@ impl Dataset {
     /// Shuffle samples and labels together.
     ///
     /// # Parameters
-    /// - `samples`: The flattened pixel buffer to shuffle.
+    /// - `samples`: The flattened pixel vector to shuffle.
     /// - `labels`: The label vector to shuffle with `samples`.
     fn shuffle(samples: &mut Vec<f32>, labels: &mut Vec<u8>) {
         let num = labels.len();
