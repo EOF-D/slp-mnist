@@ -1,8 +1,11 @@
 use slp_mnist::data_loader::Dataset;
-use std::path::PathBuf;
 
 fn main() {
-    let dataset = Dataset::load(PathBuf::from("datasets/mnist_train.csv")).unwrap();
+    let dataset = Dataset::load(
+        "datasets/train-images.idx3-ubyte",
+        "datasets/train-labels.idx1-ubyte",
+    )
+    .unwrap();
 
     let first = &dataset.samples[..slp_mnist::data_loader::NUM_PIXELS];
     let min = first.iter().cloned().fold(f32::INFINITY, f32::min);
