@@ -1,5 +1,5 @@
 use clap::Parser;
-use slp_mnist::data_loader::Dataset;
+use slp_mnist::data::Dataset;
 use slp_mnist::model::Model;
 
 use std::{fs, path::Path, time::Instant};

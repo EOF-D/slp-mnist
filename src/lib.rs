@@ -1,3 +1,3 @@
-pub mod data_loader;
+pub mod data;
 pub mod math;
 pub mod model;
