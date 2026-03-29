@@ -1,5 +1,5 @@
 //! Data loader for the MNIST dataset.
-//! IDX file format: https://www.fon.hum.uva.nl/praat/manual/IDX_file_format.html
+//! IDX file format: <https://www.fon.hum.uva.nl/praat/manual/IDX_file_format.html>
 
 use std::{
     fs::File,
@@ -32,8 +32,8 @@ impl Dataset {
     /// - A `Dataset` instance containing the shuffled samples and labels.
     ///
     /// # References
-    ///  - https://doc.rust-lang.org/std/convert/trait.AsRef.html
-    ///  - https://doc.rust-lang.org/std/path/struct.Path.html
+    ///  - <https://doc.rust-lang.org/std/convert/trait.AsRef.html>
+    ///  - <https://doc.rust-lang.org/std/path/struct.Path.html>
     pub fn load(images_path: impl AsRef<Path>, labels_path: impl AsRef<Path>) -> io::Result<Self> {
         let mut samples = Self::parse_samples(images_path)?;
         let mut labels = Self::parse_labels(labels_path)?;

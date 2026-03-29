@@ -52,7 +52,7 @@ pub fn gradient_step(weights: &mut [f32], gradient: &[f32], learning_rate: f32) 
 /// - A new vector of probabilities corresponding to each score.
 ///
 /// # References
-/// - https://www.pinecone.io/learn/softmax-activation/
+/// - <https://www.pinecone.io/learn/softmax-activation/>
 pub fn softmax(scores: &[f32]) -> Vec<f32> {
     let exp_scores: Vec<f32> = scores.iter().map(|&z| z.exp()).collect();
     let sum: f32 = exp_scores.iter().sum();
