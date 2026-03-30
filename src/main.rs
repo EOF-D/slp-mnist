@@ -53,7 +53,7 @@ fn main() {
     )
     .unwrap();
 
-    println!(
+    let header = format!(
         "epochs={} lr={} decay={} step={} train={} test={}",
         args.epochs,
         args.lr,
@@ -63,9 +63,15 @@ fn main() {
         test.len()
     );
 
+    let sep = "-".repeat(header.len());
+
+    println!("{sep}");
+    println!("{header}");
+    println!("{sep}");
+
     // Use JSON serialization for model parameters if exists.
     if let Ok(model) = Model::deserialize(&model_path) {
-        println!("loaded from: {model_path}");
+        println!("model={model_path}");
         println!(
             "test accuracy: {:.2}%",
             (0..test.len())
@@ -74,6 +80,9 @@ fn main() {
                 / test.len() as f32
                 * 100.0
         );
+
+        println!("total time: {:>7.2}s", total_time.elapsed().as_secs_f32());
+        println!("{sep}");
 
         return;
     }
@@ -103,10 +112,11 @@ fn main() {
             .count();
 
         let accuracy = correct as f32 / test.len() as f32 * 100.0;
+        let marker = if accuracy > best_accuracy { "^" } else { "" };
+
         println!(
-            "epoch {epoch}: {correct} / {} ({accuracy:.2}%) learning rate: {lr:.5} (decay: {})",
-            test.len(),
-            args.decay
+            "epoch {epoch:>3} {correct:>5}/{} ({accuracy:5.2}%) lr={lr:.5} {marker}",
+            test.len()
         );
 
         if accuracy > best_accuracy {
@@ -120,9 +130,12 @@ fn main() {
         }
     }
 
-    println!("total time: {:.2}s", total_time.elapsed().as_secs_f32());
+    println!("{sep}");
     println!(
-        "best epoch {best_epoch}: {best_correct} / {} ({best_accuracy:.2}%) learning rate: {best_lr:.5}",
+        "best epoch: {best_epoch} {best_correct}/{} ({best_accuracy:.2}%) lr={best_lr:.5}",
         test.len()
     );
+
+    println!("total time: {:.2}s", total_time.elapsed().as_secs_f32());
+    println!("{sep}");
 }
