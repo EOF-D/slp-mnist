@@ -1,8 +1,9 @@
 use clap::Parser;
 use slp_mnist::data::Dataset;
 use slp_mnist::model::Model;
+use slp_mnist::sequential::SequentialModel;
 
-use std::{fs, path::Path, time::Instant};
+use std::{fs, fs::File, path::Path, time::Instant};
 
 #[derive(Parser, Debug)]
 #[command(name = "slp-mnist", about = "SLP MNIST classifier")]
@@ -70,21 +71,23 @@ fn main() {
     println!("{sep}");
 
     // Use JSON serialization for model parameters if exists.
-    if let Ok(model) = Model::deserialize(&model_path) {
-        println!("model={model_path}");
-        println!(
-            "test accuracy: {:.2}%",
-            (0..test.len())
-                .filter(|&i| model.predict(test.sample(i)) == test.labels[i])
-                .count() as f32
-                / test.len() as f32
-                * 100.0
-        );
+    if let Ok(file) = File::open(&model_path) {
+        if let Ok(model) = serde_json::from_reader::<_, SequentialModel>(file) {
+            println!("model={model_path}");
+            println!(
+                "test accuracy: {:.2}%",
+                (0..test.len())
+                    .filter(|&i| model.predict(test.sample(i)) == test.labels[i])
+                    .count() as f32
+                    / test.len() as f32
+                    * 100.0
+            );
 
-        println!("total time: {:>7.2}s", total_time.elapsed().as_secs_f32());
-        println!("{sep}");
+            println!("total time: {:>7.2}s", total_time.elapsed().as_secs_f32());
+            println!("{sep}");
 
-        return;
+            return;
+        }
     }
 
     // Create parent directories if they don't exist.
@@ -92,7 +95,7 @@ fn main() {
         fs::create_dir_all(dir).unwrap();
     }
 
-    let mut model = Model::default();
+    let mut model = SequentialModel::default();
     let mut best_epoch = 0;
     let mut best_correct = 0;
     let mut best_accuracy = 0.0f32;
@@ -126,7 +129,7 @@ fn main() {
             best_lr = lr;
 
             // Save the best model immediately.
-            model.serialize(&model_path).unwrap();
+            serde_json::to_writer(File::create(&model_path).unwrap(), &model).unwrap();
         }
     }
 
