@@ -1,8 +1,8 @@
 //! A single layer of 10 perceptrons, one per MNIST digit class (0-9).
 
-use crate::data::NUM_PIXELS;
+use crate::data::{NUM_CLASSES, NUM_PIXELS};
 use crate::math::{dot, gradient_step, softmax};
-use crate::model::{Model, NUM_CLASSES};
+use crate::model::Model;
 
 use rand::RngExt;
 use serde::{Deserialize, Serialize};
