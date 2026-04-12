@@ -1,7 +1,7 @@
 //! A single layer of 10 perceptrons, one per MNIST digit class (0-9).
 
 use crate::data::{NUM_CLASSES, NUM_PIXELS};
-use crate::math::{dot, gradient_step, softmax};
+use crate::math::{compute_gradients, dot, gradient_step, softmax};
 use crate::model::Model;
 
 use rand::RngExt;
@@ -77,41 +77,24 @@ impl Model for SequentialModel {
     /// b       = b - lr * dL/do_i
     /// ```
     ///
-    /// # Parameters
-    /// - `pixels`: A normalized pixel slice of length 784.
-    /// - `label`: The correct class label in the range 0-9.
-    /// - `learning_rate`: The learning rate value for the gradient descent step.
-    ///
     /// # References
     /// - <https://parasdahal.com/softmax-crossentropy/>
     fn train(&mut self, pixels: &[f32], label: u8, learning_rate: f32) {
         let probabilities = self.forward_pass(pixels);
-        let mut gradient = vec![0.0f32; NUM_PIXELS];
+        let (weight_gradients, bias_gradients) = compute_gradients(pixels, &probabilities, label);
 
         for c in 0..NUM_CLASSES {
-            // One-hot encode the correct label, 1.0 or 0.0 if false.
-            let correct_label = if c == label as usize { 1.0 } else { 0.0 };
-
-            // dL/do_i = p_i - y_i, where p_i is the predicted probability and y_i is the correct label.
-            let error = probabilities[c] - correct_label;
-
-            // Reuse the buffer each iteration instead of allocating.
-            gradient
-                .iter_mut()
-                .zip(pixels)
-                .for_each(|(g, &pixel)| *g = error * pixel); // dL/dw = dL/do_i * x
-
             let start = c * NUM_PIXELS;
 
             // w = w - lr * dL/dw, where lr is the learning rate.
             gradient_step(
                 &mut self.weights[start..start + NUM_PIXELS],
-                &gradient,
+                &weight_gradients[start..start + NUM_PIXELS],
                 learning_rate,
             );
 
             //  b = b - lr * dL/do_i
-            self.biases[c] -= learning_rate * error;
+            self.biases[c] -= learning_rate * bias_gradients[c];
         }
     }
 }
