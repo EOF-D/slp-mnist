@@ -2,7 +2,6 @@
 
 use crate::data::{NUM_CLASSES, NUM_PIXELS};
 use crate::math::{compute_gradients, dot, gradient_step, softmax};
-use crate::model::Model;
 
 use rand::RngExt;
 use serde::{Deserialize, Serialize};
@@ -32,16 +31,15 @@ impl SequentialModel {
             biases: vec![0.0; NUM_CLASSES],
         }
     }
-}
 
-impl Default for SequentialModel {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Model for SequentialModel {
-    fn forward_pass(&self, pixels: &[f32]) -> Vec<f32> {
+    /// Compute the probability distribution for a single sample.
+    ///
+    /// # Parameters
+    /// - `pixels`: A normalized pixel slice of length 784.
+    ///
+    /// # Returns
+    /// - A vector of 10 probabilities, one per digit class.
+    pub fn forward_pass(&self, pixels: &[f32]) -> Vec<f32> {
         // score_c = dot(weights_c, pixels) + bias_c
         let scores: Vec<f32> = (0..NUM_CLASSES)
             .map(|c| {
@@ -55,7 +53,14 @@ impl Model for SequentialModel {
         softmax(&scores)
     }
 
-    fn predict(&self, pixels: &[f32]) -> u8 {
+    /// Predict the digit class for a single sample.
+    ///
+    /// # Parameters
+    /// - `pixels`: A normalized pixel slice of length 784.
+    ///
+    /// # Returns
+    /// - The predicted digit class in the range 0-9.
+    pub fn predict(&self, pixels: &[f32]) -> u8 {
         let probabilities = self.forward_pass(pixels);
 
         // Find the index of the class with the highest probability.
@@ -79,7 +84,7 @@ impl Model for SequentialModel {
     ///
     /// # References
     /// - <https://parasdahal.com/softmax-crossentropy/>
-    fn train(&mut self, pixels: &[f32], label: u8, learning_rate: f32) {
+    pub fn train(&mut self, pixels: &[f32], label: u8, learning_rate: f32) {
         let probabilities = self.forward_pass(pixels);
         let (weight_gradients, bias_gradients) = compute_gradients(pixels, &probabilities, label);
 
@@ -93,9 +98,15 @@ impl Model for SequentialModel {
                 learning_rate,
             );
 
-            //  b = b - lr * dL/do_i
+            // b = b - lr * dL/do_i
             self.biases[c] -= learning_rate * bias_gradients[c];
         }
+    }
+}
+
+impl Default for SequentialModel {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
