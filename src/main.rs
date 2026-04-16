@@ -78,16 +78,12 @@ fn run_sequential(args: &Args) -> f32 {
 
     // Load the MNIST datasets.
     let train = Dataset::load(
-        "datasets/train-images.idx3-ubyte",
-        "datasets/train-labels.idx1-ubyte",
+        "data/train-images.idx3-ubyte",
+        "data/train-labels.idx1-ubyte",
     )
     .unwrap();
 
-    let test = Dataset::load(
-        "datasets/t10k-images.idx3-ubyte",
-        "datasets/t10k-labels.idx1-ubyte",
-    )
-    .unwrap();
+    let test = Dataset::load("data/t10k-images.idx3-ubyte", "data/t10k-labels.idx1-ubyte").unwrap();
 
     let model_path = args.model_path("sequential");
 
@@ -153,16 +149,12 @@ fn run_parallel(args: &Args) -> f32 {
 
     // Load the MNIST datasets.
     let train = Dataset::load(
-        "datasets/train-images.idx3-ubyte",
-        "datasets/train-labels.idx1-ubyte",
+        "data/train-images.idx3-ubyte",
+        "data/train-labels.idx1-ubyte",
     )
     .unwrap();
 
-    let test = Dataset::load(
-        "datasets/t10k-images.idx3-ubyte",
-        "datasets/t10k-labels.idx1-ubyte",
-    )
-    .unwrap();
+    let test = Dataset::load("data/t10k-images.idx3-ubyte", "data/t10k-labels.idx1-ubyte").unwrap();
 
     let model_path = args.model_path("parallel");
 
