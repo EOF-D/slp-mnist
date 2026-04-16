@@ -73,27 +73,21 @@ impl ParallelModel {
     /// - `learning_rate`: The learning rate value for the gradient descent step.
     fn batch_train(&mut self, samples: &[f32], labels: &[u8], learning_rate: f32) {
         // Compute gradients for each sample in parallel.
-        let gradients: Vec<(Vec<f32>, Vec<f32>)> = samples
+        let (weight_gradients, bias_gradients) = samples
             .par_chunks_exact(NUM_PIXELS)
             .zip(labels.par_iter())
             .map(|(pixels, &label)| {
                 let probabilities = self.inner.forward_pass(pixels);
                 compute_gradients(pixels, &probabilities, label)
             })
-            .collect();
-
-        // Accumulate gradients from samples into buffer.
-        let mut weight_gradients = vec![0.0f32; NUM_CLASSES * NUM_PIXELS];
-        let mut bias_gradients = vec![0.0f32; NUM_CLASSES];
-
-        for (wg, bg) in gradients {
-            weight_gradients
-                .iter_mut()
-                .zip(wg)
-                .for_each(|(x, y)| *x += y);
-
-            bias_gradients.iter_mut().zip(bg).for_each(|(x, y)| *x += y);
-        }
+            .reduce(
+                || (vec![0.0; NUM_CLASSES * NUM_PIXELS], vec![0.0; NUM_CLASSES]),
+                |(mut aw, mut ab), (wg, bg)| {
+                    aw.iter_mut().zip(wg).for_each(|(x, y)| *x += y);
+                    ab.iter_mut().zip(bg).for_each(|(x, y)| *x += y);
+                    (aw, ab)
+                },
+            );
 
         // Divide learning rate by batch size to get average gradient across the batch size.
         let lr = learning_rate / labels.len() as f32;
