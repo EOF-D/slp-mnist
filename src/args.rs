@@ -30,7 +30,7 @@ pub struct Args {
     #[arg(long, default_value_t = 32)]
     pub batch_size: usize,
 
-    /// Override model path (default: generated from parameters).
+    /// Override model path [default: generated from parameters].
     #[arg(long)]
     pub model_path: Option<String>,
 }
