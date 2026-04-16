@@ -10,6 +10,7 @@ use std::{
 use rand::prelude::SliceRandom;
 
 pub const NUM_PIXELS: usize = 784;
+pub const NUM_CLASSES: usize = 10;
 
 // `u32` hex literals as stated in the IDX format documentation.
 const MAGIC_IMAGES: u32 = 0x0000_0803; // unsigned byte, count, rows, cols.

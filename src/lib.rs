@@ -1,3 +1,5 @@
+pub mod args;
 pub mod data;
 pub mod math;
-pub mod model;
+pub mod parallel;
+pub mod sequential;

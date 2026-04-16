@@ -1,5 +1,7 @@
 //! Math module for machine learning related operations.
 
+use crate::data::{NUM_CLASSES, NUM_PIXELS};
+
 /// Calculate the dot product of two vectors.
 ///
 /// # Parameters
@@ -58,6 +60,48 @@ pub fn softmax(scores: &[f32]) -> Vec<f32> {
     let sum: f32 = exp_scores.iter().sum();
 
     exp_scores.iter().map(|&e| e / sum).collect()
+}
+
+/// Compute weight and bias gradients using softmax cross-entropy loss.
+///
+/// # Formula
+/// ```md
+/// dL/do_i = p_i - y_i
+/// dL/dw   = dL/do_i * x
+/// ```
+///
+/// # Parameters
+/// - `pixels`: A normalized pixel slice of length 784.
+/// - `probabilities`: The predicted probability distribution over 10 classes.
+/// - `label`: The correct class label in the range 0-9.
+///
+/// # Returns
+/// - A tuple `(weight_gradients, bias_gradients)`.
+///
+/// # References
+/// - <https://parasdahal.com/softmax-crossentropy/>
+pub fn compute_gradients(pixels: &[f32], probabilities: &[f32], label: u8) -> (Vec<f32>, Vec<f32>) {
+    let mut weight_gradients = vec![0.0f32; NUM_CLASSES * NUM_PIXELS];
+    let mut bias_gradients = vec![0.0f32; NUM_CLASSES];
+
+    for c in 0..NUM_CLASSES {
+        // One-hot encode the correct label, 1.0 or 0.0 if false.
+        let correct_label = if c == label as usize { 1.0 } else { 0.0 };
+
+        // dL/do_i = p_i - y_i, where p_i is the predicted probability and y_i is the correct label.
+        let error = probabilities[c] - correct_label;
+
+        // dL/dw = dL/do_i * x
+        let start = c * NUM_PIXELS;
+        weight_gradients[start..start + NUM_PIXELS]
+            .iter_mut()
+            .zip(pixels)
+            .for_each(|(g, &pixel)| *g = error * pixel);
+
+        bias_gradients[c] = error;
+    }
+
+    (weight_gradients, bias_gradients)
 }
 
 #[cfg(test)]
@@ -131,5 +175,16 @@ mod tests {
 
         // Index 5 (9.0) should be the most probable.
         assert_eq!(probabilities[5], max);
+    }
+
+    #[test]
+    fn test_compute_gradients_len() {
+        let pixels = vec![0.5; NUM_PIXELS];
+        let probabilities = vec![0.1; NUM_CLASSES];
+
+        let (weight_gradients, bias_gradients) = compute_gradients(&pixels, &probabilities, 0);
+
+        assert_eq!(weight_gradients.len(), NUM_CLASSES * NUM_PIXELS);
+        assert_eq!(bias_gradients.len(), NUM_CLASSES);
     }
 }
