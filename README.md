@@ -8,7 +8,7 @@
 
 ## Project Description
 
-SLP-MNIST is a SLP (Single Layer Perceptron) classifier for the MNIST dataset. Implemented in Rust, it trains a model using softmax cross-entropy loss, and gradient descent with exponential learning rate decay. The model achieves the best accuracy using SGD (stochastic gradient descent, sequential model), with a max observed accuracy of ~92.77%.
+SLP-MNIST is a SLP (Single Layer Perceptron) classifier for the MNIST dataset. Implemented in Rust, it trains using gradient descent to minimize the softmax cross-entropy loss with exponential learning rate decay. The model achieves the best accuracy using the sequential version, with a max observed accuracy of ~92.77%.
 The project also includes a parallel model which uses mini-batch gradient accumulation (using rayon).
 
 **Evaluation Metrics:**
